@@ -12,6 +12,10 @@ sys_ipc_wrapper()
   Thread *curr = current_thread();
   Syscall_frame *f = curr->regs();
 
+  /* Check whether VCPU has interrupts disabled */
+  assert_kdb (!((current()->state() & Thread_vcpu_enabled) &&
+                (current()->vcpu_state().access()->state & Vcpu_state::F_irqs)));
+
   Obj_cap obj = f->ref();
   Utcb *utcb = curr->utcb().access(true);
   unsigned char rights;
